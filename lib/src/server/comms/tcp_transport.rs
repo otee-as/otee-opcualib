@@ -11,6 +11,7 @@
 //! left to asynchronous event handlers.
 use chrono::{self, Utc};
 use futures::StreamExt;
+use parking_lot::lock_api::RwLock;
 use std::{net::SocketAddr, sync::Arc};
 use tokio::{
     self,
@@ -159,6 +160,7 @@ impl TcpTransport {
         address_space: Arc<RwLock<AddressSpace>>,
         session_manager: Arc<RwLock<SessionManager>>,
     ) -> TcpTransport {
+        let session_manager = Arc::new(RwLock::new(SessionManager::default()));
         let decoding_options = {
             let server_state = trace_read_lock!(server_state);
             let config = trace_read_lock!(server_state.config);
